@@ -1,4 +1,5 @@
 var gulp = require('gulp'),
+		pug = require('gulp-pug'),
 		sass = require('gulp-sass'),
 		postcss = require('gulp-postcss'),
 		autoprefixer = require('autoprefixer'),
@@ -46,6 +47,16 @@ gulp.task('js', function() {
 });
 
 
+gulp.task('pug', function() {
+	return gulp.src('app/pug/*.pug')
+		.pipe(pug({
+			pretty: true
+		}))
+		.pipe(gulp.dest('app/'))
+		.pipe(server.stream())
+		.on('change', server.reload)
+})
+
 gulp.task('serve', function() {
 	server.init({
 		server: 'app/'
@@ -54,7 +65,7 @@ gulp.task('serve', function() {
 	gulp.watch('app/sass/**/*.scss', gulp.parallel('style'));
 	gulp.watch(['app/js/libs', 'app/js/common.js'], gulp.parallel('js'));
 	gulp.watch('app/js/pages/*.js', gulp.parallel('js'));
-	gulp.watch('app/*.html').on('change', server.reload);
+	gulp.watch('app/pug/**/*.pug', gulp.series('pug'));
 });
 
 gulp.task('images', function() {
@@ -107,4 +118,4 @@ gulp.task('removedist', function(done) { done(); return del.sync('dist');});
 
 gulp.task('build', gulp.parallel('removedist', 'images', 'webp', 'style', 'js', 'complete'));
 
-gulp.task('default', gulp.parallel('style', 'js', 'serve'));
+gulp.task('default', gulp.parallel('pug', 'style', 'js', 'serve'));
