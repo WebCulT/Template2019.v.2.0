@@ -14,9 +14,13 @@
     "pug": "^2.0.3"
   },
   "devDependencies": {
+    "@babel/core": "^7.4.4",
+    "@babel/preset-env": "^7.4.4",
     "autoprefixer": "^9.5.1",
+    "babel-cli": "^6.26.0",
     "browser-sync": "^2.26.5",
-    "del": "^4.1.0",
+    "del": "^4.1.1",
+    "gulp-babel": "^8.0.0",
     "gulp-concat": "^2.6.1",
     "gulp-csso": "^3.0.1",
     "gulp-imagemin": "^5.0.3",

@@ -1,6 +1,7 @@
 var gulp = require('gulp'),
 		pug = require('gulp-pug'),
 		sass = require('gulp-sass'),
+		babel = require('gulp-babel'),
 		postcss = require('gulp-postcss'),
 		autoprefixer = require('autoprefixer'),
 		minify = require('gulp-csso'),
@@ -34,11 +35,21 @@ gulp.task('style', function() {
 	.pipe(server.stream());
 });
 
+gulp.task('babel', function() {
+	return gulp.src([
+			'app/js/common.js',
+			'app/js/modules/*.js'
+		])
+	.pipe(babel())
+	.pipe(concat('babel.js'))
+	.pipe(gulp.dest('app/js/'));
+});
+
 gulp.task('js', function() {
 	return gulp.src([
-		'app/js/jQuery/jQuery.js',
+		'app/libs/jQuery/jQuery.js',
 		'app/js/svg4everybody.min.js',
-		'app/js/common.js'
+		'app/js/babel.js'
 		])
 	.pipe(concat('scripts.min.js'))
 	.pipe(uglify())
@@ -63,8 +74,7 @@ gulp.task('serve', function() {
 	});
 
 	gulp.watch('app/sass/**/*.scss', gulp.parallel('style'));
-	gulp.watch(['app/js/libs', 'app/js/common.js'], gulp.parallel('js'));
-	gulp.watch('app/js/pages/*.js', gulp.parallel('js'));
+	gulp.watch(['app/js/common.js', 'app/js/modules/*.js'], gulp.series('babel', 'js'));
 	gulp.watch('app/pug/**/*.pug', gulp.series('pug'));
 });
 
@@ -118,4 +128,4 @@ gulp.task('removedist', function(done) { done(); return del.sync('dist');});
 
 gulp.task('build', gulp.parallel('removedist', 'images', 'webp', 'style', 'js', 'complete'));
 
-gulp.task('default', gulp.parallel('pug', 'style', 'js', 'serve'));
+gulp.task('default', gulp.series('pug', 'style','babel', 'js', 'serve'));
